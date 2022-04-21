@@ -1,0 +1,152 @@
+---
+title: "Projet Cluster Analysis"
+subtitle: "Fouille de données"
+author: "Présenté par Jiaxun CAi et Mirana RATSIMIVEH"
+institute: "Professeur : Karim KILANI"
+date: "`r format(Sys.Date(), format='%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+# Installation de packages
+Pour la bonne réalisation du projet cluster analysis, il faut installer certains packages:
+ - dplyr
+ - kableExtra
+ - knitr
+ - tidyverse
+ - markdown
+
+<br/>
+Puis il faut les charger.
+```{r}
+library("magrittr")
+library("kableExtra")
+```
+---
+# Définition d'une distance
+Une fonction est une distance si elle respecte 3 axiomes :
+- A1 : identité d'indecernibles
+$$
+d(x,y)=0 <=> x=y
+$$
+- A2 : symétrie
+$$
+d(x,y)=d(y,x)
+$$
+- A3 : inégalité triangulaire
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+
+<b>Exercice 1 :</b></br> 
+Les axiomes A1, A2 et A3 impliquent la non-négativité :
+$$
+d(x, y) ≥ 0
+$$
+
+---
+# Distance euclidienne
+La distance euclidienne est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+<b>Exercice 2 :</b></br> 
+La distance euclidienne est une vraie distance.
+---
+Nous allons déterminer la distance euclidienne entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+- Création d'un data frame contenant les vecteurs x et y,
+- Transposition du data frame,
+- Utilisation de la fonction dist avec comme paramètres: le nom de la méthode de distance utilisée, ici "euclidiean".
+- Conversion du data frame en matrix afin d'utiliser la fonction kable,
+- Utilisation de la fonction kable pour l'esthétique du rendu.
+```{r}
+#euclidian distance
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="euclidean",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance euclidienne")
+```
+
+---
+# Distance Manhattan
+La distance Manhattan est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+Nous allons déterminer la distance manhattan entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "manhattan".
+```{r}
+#Manhattan distance
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="manhattan",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance manhattan")
+```
+---
+# Distance Camberra
+La distance Camberra est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+<b>Exercice 3 :</b></br> 
+La distance canberra est une vraie distance.
+---
+Nous allons déterminer la distance canberra entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "canberra".
+```{r}
+#Canberra distance
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="canberra",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance canberra")
+```
+---
+#Distance Minkowski
+La distance Minkowski est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+
+Nous allons déterminer la distance canberra entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "Minkowski".
+```{r}
+#Minkowski distance
+minkowski = data.frame(x=c(0,0),y=c(6,6)) %>%
+              t() %>%
+              dist(method="minkowski",diag = TRUE, upper = TRUE) %>%
+              as.matrix() %>%
+              kable(caption="Distance Minkowski")
+minkowski
+```
+---
+# Graphique de la distance Minkowski
+Nous avons réalisé un graphique représentant la distance Minkowski entre les vecteurs x et y.
+```{r}
+minkowskiFct <- function(p) {
+  res <- as.matrix(data.frame(x=c(0,0),y=c(6,6))) %>%
+    t() %>%
+    dist(method="minkowski",p=p,diag = TRUE, upper=TRUE)
+  res <- as.matrix(res)[1,2]
+  return(res)
+}
+
+res=c()
+for(p in seq(1,5,0.01)){
+  res = c(res,minkowskiFct(p))
+}
+plot(seq(1,5,0.01),res,type="l")
+
+```
+---
+# Mesure similaire pour des données binaires
+```
+
+
+```{r}
