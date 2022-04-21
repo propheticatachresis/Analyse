@@ -148,5 +148,5 @@ plot(seq(1,5,0.01),res,type="l")
 # Mesure similaire pour des données binaires
 ```
 
-
+Hello Mirana!
 ```{r}
