@@ -1,0 +1,65 @@
+---
+title: "14-04-2022"
+author: "Jiaxun Cai"
+date: '2022-04-14'
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(cluster.datasets)
+library(kableExtra)
+```
+
+```{r}
+x=c(1,5,5,5,10,25,25,25,25,29)
+y=c(4,1,2,4,4,4,6,7,8,7)
+df<-data.frame(x,y)
+
+ggplot(df,aes(x=x,y=y,label=row.names(df)))+
+  geom_point()+
+  geom_text(label=row.names(df),nudge_x = 0.25, nudge_y = 0.25,check_overlap = T)
+```
+K-means of dataset
+```{r}
+km<-kmeans(df,centers = 2)
+data.frame(km$centers)
+fviz_cluster(km,df)
+```
+Medoids Analysis
+```{r}
+PAMres<-pam(df,2)
+#Les deux medoids sont point 3 et 8
+#Les valeurs x et y sont les coordonnées
+PAMres
+PAMres["clusinfo"]
+?pam
+```
+Medoids analysis of political science data
+1.Clean data
+```{r}
+df_Rousseeuw<-read.csv("~/RStudio_Project/Cluster_Analysis/Political_science_data - Sheet1.csv")
+row.names(df_Rousseeuw)=df_Rousseeuw$X
+df_Rousseeuw<-df_Rousseeuw%>%
+  select(-X)%>%
+  as.matrix()
+df_Rousseeuw
+
+```
+2. Apply PAM analysis
+```{r}
+PAM_Rousseeuw<-pam(df_Rousseeuw,diss = TRUE,2)
+summary(PAM_Rousseeuw)
+PAM_Rousseeuw
+plot(PAM_Rousseeuw)
+```
+3. Draw image
+```{r}
+sil_Rousseeuw<-silhouette(PAM_Rousseeuw$clustering, df_Rousseeuw)
+row.names(sil_Rousseeuw)=row.names(df_Rousseeuw)
+sil_Rousseeuw
+fviz_silhouette(sil_Rousseeuw,label=TRUE, print.summary = TRUE)+
+  coord_flip()
+```
+

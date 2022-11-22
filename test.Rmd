@@ -1,0 +1,10 @@
+---
+title: "Projet_Fouille_de_données"
+author: "Jiaxun CAI, Mirana RATSIMIVEH"
+date: '2022-04-30'
+output: html_document
+---
+Nous utiliserons deux méthodes pour décider du nombre de clusters.
+
+* La méthode du coude : 
+dans laquelle la somme des carrés à chaque nombre de clusters est calculée et représentée graphiquement, on peut ainsi rechercher un changement de pente de abrupte à douce (un elbow) pour déterminer le nombre optimal de clusters. Cette méthode est inexacte, mais elle peut être utile.

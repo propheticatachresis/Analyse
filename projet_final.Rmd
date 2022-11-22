@@ -1,0 +1,687 @@
+---
+title: "Projet_Fouille_de_données"
+author: "Jiaxun CAI, Mirana RATSIMIVEH"
+date: '2022-04-30'
+output:
+  html_document: default
+  pdf_document: default
+---
+# Membres du groupe
+```{r echo=FALSE, fig.cap="Jiaxun CAI et Mirana RATSIMIVEH",out.width='50%'}
+library(knitr)
+knitr::include_graphics('WhatsApp Image 2022-05-02 at 5.10.28 PM.jpeg')
+```
+# Bibliothèques requises dans ce projet
+* cluster
+* countrycode
+* eurostat
+* factoextra
+* gapminder
+* gganimate
+* ggThemeAssist
+* gifski
+* kableExtra
+* knitr
+* leafsync
+* mapview
+* lubridate
+* png
+* sf
+* Stargazer
+* tidyverse
+```{r library, message=FALSE, warning=FALSE, include=FALSE}
+library(cluster)
+library(countrycode)
+library(eurostat)
+library(factoextra)
+library(gapminder)
+library(gganimate)
+library(ggThemeAssist)
+library(gifski)
+library(kableExtra)
+library(leafsync)
+library(lubridate)
+library(mapview)
+library(png)
+library(sf)
+library(stargazer)
+library(tidyverse)
+library(corrplot)
+library(openxlsx)
+library(gdata)
+library(heatmaply)
+library(fastDummies)
+```
+# Instructions pour la première section
+Vous devez résoudre quelques exercices théoriques et reproduire les exemples simples du cours en améliorant éventuellement le rendu.
+
+* Utilisez kable() et Stargazer() pour des tableaux de qualité.
+* Vos graphiques avec ggplot2 doivent comporter des titres des légendes claires.
+* Pour le traitement des data, utilisez les lignes de code les plus courtes en ayant recours au pipes (%>%) et au langage de tidyverse.
+* Le traitement d’exemples classiques supplémentaires (Titanic, Iris, mtcars) sera un plus apprécié.
+
+## Définition d'une distance
+Une fonction est une distance si elle respecte 3 axiomes :<br/>
+- A1 : identité d'indecernibles
+$$
+d(x,y)=0 <=> x=y
+$$
+- A2 : symétrie
+$$
+d(x,y)=d(y,x)
+$$
+- A3 : inégalité triangulaire
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+<b>Exercice 1 :</b></br> 
+Les axiomes A1, A2 et A3 impliquent la non-négativité :
+$$
+d(x, y) ≥ 0
+$$
+$$
+d(x, y) = 0 <=> x=y
+$$
+$$
+d(x, y) = d(y,x)
+$$
+$$
+d(x, z) ≤ d(x,y) + d(y,z)
+$$
+$$
+d(x, y) ≥ 0
+$$
+
+## Distance euclidienne
+
+La distance euclidienne est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+<b>Exercice 2 :</b></br> 
+La distance euclidienne est une vraie distance.
+$$
+d(x,y) = \sqrt{\sum_{m}^{j=1}(x_{j}-y_{j})^2}= 0
+$$
+$$
+\sum_{m}^{j=1}(x_{j}-y_{j})^2 = 0
+$$
+$$
+(x_{j}-y_{j})^2 = 0
+$$
+$$
+\forall j  \text{, } x_{j}-y_{j}=0
+$$
+$$
+\forall j  \text{, } x_{j}=y_{j}
+$$
+$$
+\forall j  \text{, } x=y
+$$
+
+<br>
+Nous allons déterminer la distance euclidienne entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+- Création d'un data frame contenant les vecteurs x et y,
+- Transposition du data frame,
+- Utilisation de la fonction dist avec comme paramètres: le nom de la méthode de distance utilisée, ici "euclidiean".
+- Conversion du data frame en matrix afin d'utiliser la fonction kable,
+- Utilisation de la fonction kable pour l'esthétique du rendu.
+```{r distance_euclidean, echo=FALSE, message=FALSE, warning=FALSE}
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="euclidean",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance euclidienne","pipe")
+```
+## Distance Manhattan
+La distance Manhattan est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+Nous allons déterminer la distance manhattan entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "manhattan".
+```{r distance_manhattan, echo=FALSE, message=FALSE, warning=FALSE}
+#Manhattan distance
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="manhattan",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance manhattan","pipe")
+```
+## Distance Camberra
+La distance Camberra est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+<b>Exercice 3 :</b></br> 
+La distance canberra est une vraie distance.<br/>
+Nous allons déterminer la distance canberra entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "canberra".
+```{r distance_canberra, echo=FALSE, message=FALSE, warning=FALSE}
+#Canberra distance
+data.frame(x=c(0,0),y=c(6,6)) %>%
+  t() %>%
+  dist(method="canberra",diag = TRUE, upper = TRUE) %>%
+  as.matrix() %>%
+  kable(caption="Distance canberra","pipe")
+```
+## Distance Minkowski
+La distance Minkowski est définie :
+$$
+d(x, z) ≤ d(x, y) + d(y, z)
+$$
+Nous allons déterminer la distance canberra entre les vecteurs x = (0, 0) and y = (6, 6): </br>
+nous utilisons le code de la distance euclidienne mais nous changeons la valeur du paramètre method de la fonction dist en "Minkowski".
+```{r distance_minkowski, echo=FALSE, message=FALSE, warning=FALSE}
+#Minkowski distance
+minkowski = data.frame(x=c(0,0),y=c(6,6)) %>%
+              t() %>%
+              dist(method="minkowski",diag = TRUE, upper = TRUE) %>%
+              as.matrix() %>%
+              kable(caption="Distance Minkowski","pipe")
+minkowski
+```
+# Graphique de la distance Minkowski
+Nous avons réalisé un graphique représentant la distance Minkowski entre les vecteurs x et y.
+```{r graph_minkowski, echo=FALSE, message=FALSE, warning=FALSE}
+minkowskiFct <- function(p) {
+  res <- as.matrix(data.frame(x=c(0,0),y=c(6,6))) %>%
+    t() %>%
+    dist(method="minkowski",p=p,diag = TRUE, upper=TRUE)
+  res <- as.matrix(res)[1,2]
+  return(res)
+}
+
+res=c()
+for(p in seq(1,5,0.01)){
+  res = c(res,minkowskiFct(p))
+}
+plot(seq(1,5,0.01),res,type="l")
+
+```
+
+# Mesure similaire pour des données binaires
+
+```{r echo=FALSE}
+dfcorr <- data.frame(person=c("Ilan","Talia","Jacqueline","Kim","Lieve","Leon","Peter","Tina"), sex=c(1,0,0,0,0,1,1,0), married=c(0,0,1,0,1,1,1,0), hair=c(1,0,0,1,0,0,0,0), eyes=c(1,1,0,0,0,0,0,1), glasses=c(0,0,1,0,0,1,1,0), face=c(0,1,0,0,0,1,0,1), pesimist=c(1,0,0,1,0,0,1,0),evening=c(0,0,0,0,1,1,1,0), child=c(0,0,0,0,1,1,0,0), left=c(0,0,0,1,0,0,0,0))
+#dfcorr
+
+dfcorr1 <- data.frame(sex=c(1,0,0,0,0,1,1,0), married=c(0,0,1,0,1,1,1,0), hair=c(1,0,0,1,0,0,0,0), eyes=c(1,1,0,0,0,0,0,1), glasses=c(0,0,1,0,0,1,1,0), face=c(0,1,0,0,0,1,0,1), pesimist=c(1,0,0,1,0,0,1,0),evening=c(0,0,0,0,1,1,1,0), child=c(0,0,0,0,1,1,0,0), left=c(0,0,0,1,0,0,0,0))
+
+row.names(dfcorr1)<-c("Ilan","Talia","Jacqueline","Kim","Lieve","Leon","Peter","Tina")
+
+dfcorr1<-dfcorr1 %>% arrange(dfcorr1$sex)
+
+dfcorr1%>%
+  as.matrix() %>%
+  kable(caption="Variable binaire pour 8 personnes",format = "pipe")
+
+```
+# Distance binaire sur les données binaires
+
+```{r echo=FALSE}
+library('ade4')
+d2<-dist.binary(dfcorr1,method=2,diag = TRUE, upper = FALSE)
+d2<-as.matrix(d2)
+as.matrix(d2) %>% kable(caption="Distance binaire sur 8 personnes",format = "pipe")
+
+```
+# Représentation de la matrice des similitarités
+
+Nous utilisons le package corrplot pour faire cette représentation.
+Malheuresement, une corrélation ne s'apparente pas à une distance mais plutôt à une similarité. Nous allons donc représenter directement les similarités fournies par la matrice des distances ci-dessus.
+
+Visualisation de la matrice de correlation du jeu de donnée de 8 personnes
+```{r echo=FALSE}
+corrplot(1-d2^2,method="circle",type = "upper", diag = FALSE)
+```
+
+```{r echo=FALSE}
+
+heatmaply(d2,main = "Heatmap du jeu de données de 8 personnes")
+
+```
+# Distance binaire avec des variables nominales
+```{r echo=FALSE}
+#Nominal variables
+df <- data.frame(col = c("blue","brown","brown"),sex=c("H","F","F"))
+df %>% as.matrix() %>%
+  kable(caption="Variable nominal",format = "pipe")
+```
+```{r echo=FALSE}
+#permet de convertir nominal en binaire
+
+df <- dummy_cols(df)
+df %>% as.matrix() %>%
+  kable(caption="Variable nominal binaire",format = "pipe")
+```
+```{r echo=FALSE}
+dist = dist.binary(df[,-c(1,2)], method=2,diag=TRUE)
+1-(dist^2)
+```
+
+```{r echo=FALSE}
+data(animals)
+df_animal <- animals
+df_animal[df_animal=="2"]<-"0"
+df_animal %>% as.matrix() %>% kable(caption = "Jeu de données animals : données révisées",format="pipe")
+
+```
+
+Similarité entre les variables war et end :
+$$
+\lvert (5 * 8) - (1 * 4)\rvert = 36
+$$
+```{r echo=FALSE}
+table(df_animal$war,df_animal$end) %>% as.matrix() %>% kable(format="pipe")
+df_animal$end[which(is.na(df_animal$end))] <- df_animal$war[which(is.na(df_animal$end))]
+df_animal %>% as.matrix %>% kable(caption="Jeu de donnée animals",format="pipe")
+```
+Similarité : 
+```{r}
+(abs(1-0)+abs(0-1)+abs(0-1)+1+abs(1-3)/2+abs(3-15)/17+abs(150-25)/180+abs(50-15)/50)/8
+```
+# Dissimilarité de Gower
+
+Le coefficient de Gower est une mesure de dissimilarité spécifiquement conçue pour traiter des types d'attributs ou des
+variables.
+```{r echo=FALSE}
+#data(flower)
+row.names(flower) = c("begonia","broom","camellia","dahlia","forget-me-not","fuchsia","geranium","gladiolus","heather","hydrangea","iris","lily","lily-of-the-valley","peony","pink carnation","red rose","scotch rose", "tulip")
+d_flow<-daisy(flower, metric="gower")
+d_flow %>% as.matrix() %>% kable(format="pipe")
+```
+Visualisation et calcul de matrice de distance
+```{r}
+
+fviz_dist(d_flow)
+
+```
+
+# Visualiser des résultats K-means
+```{r echo=FALSE}
+df_kmeans<-read.csv("Hartigandata1.csv")%>%
+  select(3,4,6)%>%
+  head(8)
+
+df_kmeans[3,1]<-13 # Corriger l'erreur en ligne 3
+df_kmeans[6,1]<-4 # Corriger l'erreur en ligne 6
+df_kmeans[7,3]<-1 # Corriger l'erreur en ligne 7
+
+rownames(df_kmeans)<-c("BB","HR","BR","BS","BC","CB","CC","BH")
+colnames(df_kmeans)<-c("Energy","Protein","Calcium")
+
+# Transformer le dataframe en matrice
+df_kmeans%>%
+  as.matrix() %>% kable(caption = "Jeu de donnée Hartigandata",format="pipe")
+
+# Fixer les nombres
+set.seed(1) #Sert à partir de la même configuration initialle 
+
+# Standardiser les données
+# df2 <- scale(df)
+
+# Kmeans clustering
+# centers=4 car la baisse est situé à la valeur 4
+km <- kmeans(df_kmeans, centers = 4)
+
+```
+
+Le taux d'erreur est égale à :
+```{r echo=FALSE}
+# le taux d'erreur
+km$tot.withinss # L'erreur quadratique inter-cluster 
+```
+
+Les différents objets avec leurs clusters
+```{r echo=FALSE}
+
+#les objets avec leurs clusters
+km$cluster
+
+```
+
+Méthode pour déterminer le nombre idéal de k
+```{r echo=FALSE}
+# Mèthode pour voir le nombre idéal de "k"
+# y= critère d'erreur, x= nbr cluster
+fviz_nbclust(df_kmeans, kmeans, method = "wss", k.max = 7) #ça tombe sur le 4 (centers=4)
+
+```
+<br/>
+Visualiser k-means, les clusters
+<br/>
+```{r echo=FALSE}
+fviz_cluster(km, data = df_kmeans)
+
+```
+
+Silhouette : valeurs et visualisation
+```{r echo=FALSE}
+s<-silhouette(km$cluster, dist(df_kmeans))
+#pour avoir les noms sur les silhouette
+row.names(s)<-row.names(df_kmeans)
+fviz_silhouette(s,label=TRUE)
+
+```
+
+# Dissimilarités entre 12 pays 
+```{r echo =FALSE}
+x = c(1,5,5,5,10,25,25,25,25,29)
+y = c(4,1,2,4,4,4,6,7,8,7)
+df <- data.frame(x,y)
+df %>% as.matrix() %>% kable(caption="Coordonnées des pays",format="pipe")
+#n!/x!(n-x)!
+choose(101,2)
+
+#ggplot(df,aes(x=x, y=y, label=row.names(df)) ,check_overlap = T)
+```
+
+K-means clustering analysis des pays
+```{r echo=FALSE}
+km <- kmeans(df, centers = 2)
+
+fviz_cluster(km, data = df)
+
+```
+
+Partitionnement autour des médoïdes
+```{r echo=FALSE}
+pam_df <- pam(df,2)
+#l'id 3 et 8 sont les identifiants avec leurs coordonnées
+#clustering vector l'emplacement cluster des objets 
+pam_df$medoids
+summary(pam_df)
+```
+```{r echo=FALSE}
+df_Rousseeuw<-read.csv("Political_science_data - Sheet1.csv")
+row.names(df_Rousseeuw)=df_Rousseeuw$X
+df_Rousseeuw<-df_Rousseeuw%>%
+  select(-X)%>%
+  as.matrix()
+df_Rousseeuw %>% kable(caption = "Dissimilarités entre 12 pays",format="pipe")
+
+```
+
+Partitionnement autour des médoïdes
+```{r echo=FALSE}
+PAM_Rousseeuw<-pam(df_Rousseeuw,diss = TRUE,2)
+PAM_Rousseeuw
+```
+
+Silhouette : valeurs et visualisation
+```{r echo=FALSE}
+s<-silhouette(PAM_Rousseeuw$cluster, dist(df_Rousseeuw))
+row.names(s)<-row.names(df_Rousseeuw)
+fviz_silhouette(s, label=TRUE)
+
+sil_Rousseeuw<-silhouette(PAM_Rousseeuw$clustering, df_Rousseeuw)
+row.names(sil_Rousseeuw)=row.names(df_Rousseeuw)
+sil_Rousseeuw 
+fviz_silhouette(sil_Rousseeuw,label=TRUE, print.summary = TRUE) +
+  coord_flip()
+```
+
+
+
+
+# Instructions pour la seconde section
+
+* Avec les données de revenu moyen Eurostat, complétez la carte de représentation du revenu moyen en Europe pour une année donnée.
+```{r revenu_moyen, echo=FALSE, message=FALSE, warning=FALSE}
+df_revenu<-get_eurostat(id="ilc_di03")%>%
+  filter(age=="TOTAL"&sex=="T"&indic_il=="MEI_E"&unit=="EUR"&nchar(geo)<3&geo!="EA" )%>%
+  mutate(annee=year(time))%>%
+  mutate(pays=countrycode(geo,"iso2c","country.name"))%>%
+  select(annee,geo,pays,values)%>%
+  mutate(cat=cut_to_classes(values,n=4,decimals=1))
+
+df_revenu2019<-df_revenu%>%
+  filter(annee==2019&is.na(pays)==FALSE)
+
+get_eurostat_geospatial(nuts_level = 0)%>%
+  right_join(df_revenu2019)%>%
+  ggplot(aes(fill=cat)) +
+  geom_sf(color=alpha("white",1/3),alpha=.9) +
+  geom_sf_text(aes(label=pays),size=2) +
+  xlim(c(-12,44)) + ylim(c(33,70)) + 
+  labs(title="Revenu net équivalent moyen dans les pays européens en 2019",subtitle = "Source des données : Revenu moyen et médian par âge et sexe - Enquêtes EU-SILC et ECHP, disponibles dans Eurostat.",fill="Revenu moyen en €") +
+  theme_void()
+```
+
+* Produisez des graphiques dynamiques de l’évolution de la richesse en Europe.
+```{r anima, echo=FALSE, message=FALSE, warning=FALSE}
+dfrank<-df_revenu %>%
+  group_by(pays) %>%
+  summarise(x = mean(values))%>%
+  mutate(x = rank(x))
+
+graph_anima<-left_join(df_revenu,dfrank, by = "pays")%>%
+  ggplot(aes(x = x , y =values, color=pays))+
+  geom_text(aes(label = pays),size=2)+
+  theme(legend.position="none",
+          panel.background = element_rect(fill = "white",
+                                colour = "white",
+                                size = 0.5, linetype = "solid"),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
+
+graph_anima +
+  transition_time(annee)+
+  labs(title='Evolution de la richesse en Europe',
+       subtitle = 'année: {round(frame_time)}', 
+       x = '', y = 'Revenu moyen')
+```
+
+* Téléchargez des données sur l’indice d’inégalité de Gini après avoir expliqué son calcul et ses propriétés (bonnes ou mauvaises).
+<br/>
+**Indice de Gini**
+<br/>
+Si l'on dispose de données brutes de revenus ou d'une richesse quelconque, qui sont des valeurs positives notées $x_1,x_2,\cdots,x_n$, où $n$ est le nombre d'individus, l'indice de Gini associé à ces valeurs, noté $G$, est défini par : $$
+    G=\frac{\sum_{i=1}^n\sum_{j=1}^n|x_i-x_j|/n^2}{2\mu},
+    $$ où $$
+    \mu=\frac{\sum_{i=1}^n x_i}{n}.
+    $$
+Cet indice est souvent utilisé pour mesurer les inégalités de revenu dans une population.
+On remarque que l'orsqu'on double les salaires, $G$ reste invariant
+Si l'on rajoute un même montant a tous les individus, le numérateur de $G$ reste invariant tandis que le dénominateur croît. Ainsi, $G$ va baisser.
+On rappelle que si $a$ et $b$ sont deux nombres, $|a-b|=a + b -2\min(a,b)$, cela induit une nouvelle expression de l'indice de Gini
+$$
+G=1-\frac{\sum_{i=1}^n\sum_{j=1 }^n
+\min(x_i,x_j)/n^2}{\mu}.
+$$
+**Chargement des données de l'inégalité**
+```{r gini, echo=FALSE, message=FALSE, warning=FALSE}
+df_inegalite<-get_eurostat(id="ilc_di01")%>%
+  filter(currency=="EUR"&indic_il=="SHARE"&str_detect(quantile,"D")&str_detect(geo,"EU")==FALSE&str_detect(geo,"EA")==FALSE)%>%
+  mutate(annee=year(time))%>%
+  mutate(pays=countrycode(geo,"iso2c","country.name"))%>%
+  select(annee,geo,pays,quantile,values)
+
+summary(df_inegalite)%>%
+  kable(caption="Résumé des données brutes : Distribution des revenus par quantiles","pipe")
+```
+## Calculer le coefficient de Gini dans la dataframe de l'inégalité
+```{r calcul_gini, echo=FALSE, message=FALSE, warning=FALSE}
+df_gini<-df_inegalite%>%
+  mutate(decile_actuel=case_when(
+    quantile=='D1' ~ 0.1,quantile=='D2' ~ 0.2,quantile=='D3' ~ 0.3,
+    quantile=='D4' ~ 0.4,quantile=='D5' ~ 0.5,quantile=='D6' ~ 0.6,
+    quantile=='D7' ~ 0.7,quantile=='D8' ~ 0.8,quantile=='D9' ~ 0.9,quantile=='D10' ~ 1))%>%
+  mutate(decile_reste=1-decile_actuel)%>%
+  mutate(part_du_revenu=values/100)%>%
+  mutate(indice_gini=part_du_revenu*(decile_actuel+2*decile_reste))%>%
+  select(annee,geo,pays,indice_gini)%>%
+  arrange(annee,pays)
+
+df_gini<-df_gini%>%
+  group_by(annee,geo,pays)%>%
+  summarise(coefficient_Gini=sum(indice_gini)-1)
+
+summary(df_gini)%>%
+  kable(caption="résumé du coefficient de Gini calculé dans le dataframe","pipe")
+```
+* Représentez graphiquement les inégalités.
+## l'inégalité en 2019
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+df_gini2019<-df_gini%>%
+  filter(annee==2019&is.na(pays)==FALSE)
+
+get_eurostat_geospatial(nuts_level = 0)%>%
+  right_join(df_gini2019)%>%
+  ggplot(aes(fill=coefficient_Gini)) +
+  geom_sf(color=alpha("white",1/3),alpha=.9) +
+  geom_sf_text(aes(label=pays),size=2) +
+  xlim(c(-12,44)) + ylim(c(33,70)) + 
+  labs(title="Inégalité des revenus dans les pays européens en 2019",subtitle = "Source des données : Distribution des revenus par quantiles - Enquêtes EU-SILC et PCM, disponibles dans Eurostat.",fill="Coefficient de Gini") +
+  theme_void()
+```
+
+## l'inégalité dans l'évolution
+```{r Gini_anima, echo=FALSE, message=FALSE, warning=FALSE}
+gini_rang<-df_gini %>%
+  group_by(pays) %>%
+  summarise(x = mean(coefficient_Gini))%>%
+  mutate(x = rank(x))
+
+gini_anima<-left_join(df_gini,gini_rang, by = "pays")%>%
+  ggplot(aes(x = x , y =coefficient_Gini, color=pays))+
+  geom_text(aes(label = pays),size=2)+
+  theme(legend.position="none",
+          panel.background = element_rect(fill = "white",
+                                colour = "white",
+                                size = 0.5, linetype = "solid"),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
+
+gini_anima +
+  transition_time(annee)+
+  labs(title="Evolution de l'inégalité en Europe",
+       subtitle = 'année: {round(frame_time)}', 
+       x = '', y = 'Coefficient de Gini')
+```
+
+* Tentez de représenter simulatnément la richesse (revenu moyen) et les inégalités (Gini).
+```{r sf_revenue_gini, echo=FALSE, message=FALSE, warning=FALSE}
+sf_gini_2019<-get_eurostat_geospatial(nuts_level = 0)%>%
+  right_join(df_gini2019)
+sf_revenue_2019<-get_eurostat_geospatial(nuts_level = 0)%>%
+  right_join(df_revenu2019)
+# 
+# sf2019<-inner_join(df_gini2019,df_revenu2019,by="geo")%>%
+#   select(geo,coefficient_Gini,values)
+# 
+# sf2019<-get_eurostat_geospatial(nuts_level = 0)%>%
+#   right_join(sf2019)
+mapgini <- mapview(sf_gini_2019, zcol = "coefficient_Gini")
+maprev <- mapview(sf_revenue_2019, zcol = "values")
+sync(mapgini, maprev)
+```
+* Téléchargez d’autres indicateurs européens qui concernent la santé l’éducation, etc.
+<br/>
+
+### Obtenez le jeu de données d'Eurostat
+l'espérance de vie en bonne santé basée sur la santé perçue par l'individu
+```{r get_sante, echo=FALSE, message=FALSE, warning=FALSE}
+#search_eurostat(pattern = "Health")
+df_sante<-get_eurostat(id="hlth_silc_17")
+
+df_sante<-df_sante%>%
+  filter(indic_he=="HE_BIRTH"&str_detect(geo,"EU")==FALSE&str_detect(geo,"EA")==FALSE)%>%
+  mutate(annee=year(time))%>%
+  mutate(pays=countrycode(geo,"iso2c","country.name"))%>%
+  select(annee,geo,pays,values)
+df_sante2019<-df_sante%>%
+  filter(annee==2019&is.na(pays)==FALSE)%>%
+  group_by(annee,geo,pays)%>%
+  summarise(values=mean(values))
+
+df_sante2019%>%
+  as.matrix()%>%
+  kable(caption = "l'espérance de vie en bonne santé dans les pays européens en 2019","pipe")
+```
+Population par niveau d'éducation, sexe et âge (%)
+```{r get_edu, echo=FALSE, message=FALSE, warning=FALSE}
+#search_eurostat(pattern = "education")
+df_edu<-get_eurostat(id="edat_lfse_03")
+df_edu<-df_edu%>%
+  filter(age=="Y25-64"&isced11=="ED3-8"&str_detect(geo,"EU")==FALSE&str_detect(geo,"EA")==FALSE)%>%
+  mutate(annee=year(time))%>%
+  mutate(pays=countrycode(geo,"iso2c","country.name"))%>%
+  select(annee,geo,pays,values)
+df_edu2019<-df_edu%>%
+  filter(annee==2019&is.na(pays)==FALSE)%>%
+  group_by(annee,geo,pays)%>%
+  summarise(values=mean(values))
+df_edu2019%>%
+  as.matrix()%>%
+  kable(caption = "la part de la population âgée de 25 à 64 ans ayant suivi une formation post-secondaire dans les pays européens en 2019","pipe")
+```
+* Faites une Cluster Analysis des données.<br/>
+Préparez les données, joignez toutes les variables dans un ensemble de données. Ici, nous avons quatre variables pour notre analyse en cluster :<br/>
+1. le revenu moyen
+2. coefficient de Gini
+3. Espérance de vie en bonne santé
+4. Pourcentage de la population ayant reçu une éducation post-secondaire 
+```{r donne_clust, echo=FALSE, message=FALSE, warning=FALSE}
+df_clust<-df_gini2019%>%
+  left_join(y=df_revenu2019,by="geo")%>%
+  select(geo,coefficient_Gini,values)%>%
+  rename('Revenu_Moyen/€'=values)
+
+df_clust<-df_clust%>%
+  left_join(y=df_sante2019,by="geo")%>%
+  select(geo,coefficient_Gini,'Revenu_Moyen/€',values)%>%
+  rename('espérance_de_vie/an'=values)
+
+df_clust<-df_clust%>%
+  left_join(y=df_edu2019,by="geo")%>%
+  select(geo,coefficient_Gini,'Revenu_Moyen/€','espérance_de_vie/an',values)%>%
+  rename('éducation_postsecondaire/%'=values)%>%
+  replace(is.na(.),0)%>%
+  column_to_rownames(var="geo")
+
+df_clust%>%
+  as.matrix()%>%
+  kable(caption = "Situation générale des pays européens en 2019 concernant les revenus, les inégalités, la santé et l'éducation","pipe")
+```
+Nous utiliserons deux méthodes pour décider du nombre de clusters.
+
+* La méthode du coude : 
+dans laquelle la somme des carrés à chaque nombre de clusters est calculée et représentée graphiquement, on peut ainsi rechercher un changement de pente de abrupte à douce (un elbow) pour déterminer le nombre optimal de clusters. Cette méthode est inexacte, mais elle peut être utile.
+```{r elbow, echo=FALSE, message=FALSE, warning=FALSE}
+fviz_nbclust(df_clust, kmeans, method = "wss") +
+geom_vline(xintercept = 2, linetype = 2)
+```
+
+* La méthode des silhouettes : 
+elle permet de déterminer le nombre optimal de clusters. La méthode de la silhouette moyenne calcule la silhouette moyenne des observations pour différentes valeurs de k. Le nombre optimal de clusters k est celui qui maximise la silhouette moyenne sur une gamme de valeurs possibles pour k.
+```{r silhouette, echo=FALSE, message=FALSE, warning=FALSE}
+fviz_nbclust(df_clust, kmeans, method = "silhouette", k.max = 30) +
+  ggtitle("Le complot de la Silhouette")
+```
+
+Même si la méthode de la silhouette nous suggère de prendre cinq clusters, nous avons cependant découvert que deux clusters peuvent également apporter une largeur de silhouette relativement élevée. Nous allons donc continuer à mener notre analyse en deux clusters afin de faciliter l'analyse.<br/>
+
+## Cluster Analysis dans k-means
+```{r kmeans, echo=FALSE, message=FALSE, warning=FALSE}
+km<-kmeans(df_clust,centers = 2)
+mat_centers<-km$centers%>%
+  as.matrix()
+rownames(mat_centers)<-c("Cluster1","Cluster2")
+kable(mat_centers,caption = "centres du clust","pipe")
+
+df_kmres<-data.frame(km$cluster)%>%
+  rownames_to_column(var="geo")%>%
+  mutate(pays=countrycode(geo,"iso2c","country.name"))%>%
+  mutate(km.cluster=as.character(km.cluster))
+  
+get_eurostat_geospatial(nuts_level = 0)%>%
+  right_join(df_kmres)%>%
+  ggplot(aes(fill=km.cluster)) +
+  geom_sf(color=alpha("white",1/3),alpha=.9) +
+  geom_sf_text(aes(label=pays),size=2) +
+  xlim(c(-12,44)) + ylim(c(33,70)) + 
+  theme_void()
+```
+

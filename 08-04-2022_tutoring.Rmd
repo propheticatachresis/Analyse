@@ -1,0 +1,75 @@
+---
+title: "K-means"
+author: "Jiaxun Cai"
+date: '2022-04-08'
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(cluster)
+library(cluster.datasets)
+library(factoextra)
+```
+Read csv and reformulate the dataset
+```{r}
+df<-read.csv("Hartigandata1.csv")%>%
+  select(2,3,4,6)%>%
+  head(8)
+
+df[3,2]<-13 # Error in line 3
+df[6,2]<-4 # Error at line 6
+df[7,4]<-1 # Error at line 7
+
+rownames(df)<-df$name
+df=select(df,-name)
+colnames(df)<-c("Energy","Protein","Calcium")
+df
+
+```
+apply K-means
+```{r}
+km.res<-kmeans(df,centers = 4)
+fviz_cluster(km.res,df)
+```
+
+Try to conduct a more complex analysis to see the nutritions
+```{r}
+df_complex=nutrients.meat.fish.fowl.1959
+rownames(df_complex)=df_complex$name
+
+df_complex<-df_complex%>%
+  select(-1)
+
+
+#Find the best number for clusts
+fviz_nbclust(df_complex, kmeans, method = "wss",k.max = 10)+ theme_minimal() + ggtitle("The Silhouette Plot")
+# Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
+# This means that there are Na value in dataset
+set.seed(100)
+km.complex<-kmeans(df_complex,centers = 8)
+
+fviz_cluster(km.complex,df_complex)
+
+
+df_complx_cluster = data.frame(km.complex$cluster)
+df_complx_centers = data.frame(km.complex$centers)
+
+```
+show result
+```{r}
+df_complx_cluster%>%
+  filter(km.complex.cluster==3)
+df_complx_centers
+```
+Review the SSE of K-means analysis
+```{r}
+km.complex$tot.withinss
+```
+An example of sihouette analysis
+```{r}
+s<-silhouette(km.res$cluster, dist(df))
+row.names(s)<-row.names(df)
+fviz_silhouette(s,label=TRUE)
+
+```
+
